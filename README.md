@@ -127,7 +127,7 @@ Ensure the AML pipelines reference the correct compute and environment values th
   - Compute: `azureml:cpu-cluster-fs`
   - Environment: `azureml:fs-env`
  
-You may need to update these in the following files:
+You may need to update these in the AML components found in the following files:
  
 - `featurestore_sample/project/fraud_model/pipelines/training_pipeline.yaml`
 - `featurestore_sample/project/fraud_model/pipelines/batch_inference_pipeline.yaml`
