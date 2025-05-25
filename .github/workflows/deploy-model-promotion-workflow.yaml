@@ -1,0 +1,66 @@
+name: deploy-model-promotion-pipeline
+
+on: 
+  workflow_run:
+    workflows: [deploy-model-training-pipeline]
+    types:
+      - completed
+      
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy (dev, test, prod)'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - dev
+          - test
+          - prod
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  get-config:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment: ${{ github.event.inputs.environment || 'test' }}
+    outputs:
+      location: ${{ vars.AZURE_LOCATION }}
+      resource_group: ${{ vars.RESOURCE_GROUP }}
+      aml_workspace: ${{ vars.AML_WORKSPACE }} 
+      application_insights: ${{ vars.APPLICATION_INSIGHTS }}
+      key_vault: ${{ vars.KEY_VAULT }}
+      storage_account: ${{ vars.STORAGE_ACCOUNT }}
+      container_registry: ${{ vars.CONTAINER_REGISTRY }}
+      enable_aml_computecluster: ${{ vars.ENABLE_AML_COMPUTECLUSTER }}
+      enable_monitoring: ${{ vars.ENABLE_MONITORING }}
+
+    steps: 
+        - uses: actions/checkout@v4
+
+  register-environment:
+      needs: get-config
+      if: ${{ github.event.workflow_run.conclusion == 'success' }}
+      uses: ./.github/workflows/reusable-register-environment.yml
+      with:
+        resource_group: ${{ needs.get-config.outputs.resource_group }}
+        workspace_name: ${{ needs.get-config.outputs.aml_workspace }}     
+        environment_file: featurestore_sample/project/env/train-env.yml
+        conda_file: featurestore_sample/project/env/conda.yml
+        environment: ${{ github.event.inputs.environment || 'test' }}
+      secrets: inherit
+
+  run-pipeline:
+      needs: [get-config,register-environment] 
+      if: ${{ github.event.workflow_run.conclusion == 'success' }}
+      uses: ./.github/workflows/reusable-run-pipeline.yml
+      with:
+        resource_group: ${{ needs.get-config.outputs.resource_group }}
+        workspace_name: ${{ needs.get-config.outputs.aml_workspace }}     
+        parameters-file:  featurestore_sample/project/fraud_model/pipelines/batch_inference_pipeline.yaml
+        job-name: test
+        environment: ${{ github.event.inputs.environment || 'test' }}
+      secrets: inherit
+

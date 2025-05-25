@@ -1,0 +1,15 @@
+dependencies:
+  - python=3.8
+  - pip:
+      - protobuf==3.19.6
+      - aiohttp==3.8.4
+      - 'azureml-featurestore[online]==1.1.1'
+      - azure-ai-ml==1.24.0
+      - azure-mgmt-msi
+      - azure-mgmt-redis
+      - azure-mgmt-authorization==3.0.0
+      - pandas==1.5.3
+      - scikit-learn
+      - azureml-inference-server-http
+      - pyspark
+name: fs_online_env

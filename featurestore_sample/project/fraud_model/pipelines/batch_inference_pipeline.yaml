@@ -1,0 +1,91 @@
+# This is a pipeline is for illustration purpose only. Do not use it for production use.
+description: batch inference pipeline
+display_name: batch_inference
+experiment_name: batch inference on fraud model
+type: pipeline
+settings:
+  continue_on_step_failure: false
+
+inputs:
+  observation_data:
+    mode: ro_mount
+    path: wasbs://data@azuremlexampledata.blob.core.windows.net/feature-store-prp/observation_data/batch_inference/
+    type: uri_folder
+  timestamp_column: timestamp
+  RESOURCE_GROUP:
+    type: string
+  WORKSPACE_NAME:
+    type: string
+  SUB_ID:
+    type: string
+  CLIENT_ID:
+    type: string
+  REGISTRY_NAME:
+    type: string
+  TENANT_ID:
+    type: string
+  CLIENT_SECRET:
+    type: string
+
+jobs:
+
+  model_retrieval_step:
+    type: command
+    compute: azureml:cpu-cluster-fs #ensure this matched the compute target in your workspace
+    code: ../batch_inference/src
+    environment: azureml:fs-env:1 #ensure this matched the environment in your workspace
+    environment_variables:
+      RESOURCE_GROUP: ${{parent.inputs.RESOURCE_GROUP}}
+      WORKSPACE_NAME: ${{parent.inputs.WORKSPACE_NAME}}
+      AZURE_SUBSCRIPTION_ID: ${{parent.inputs.SUB_ID}}
+      AZURE_CLIENT_ID: ${{parent.inputs.CLIENT_ID}}
+      REGISTRY_NAME: ${{parent.inputs.REGISTRY_NAME}}
+      AZURE_TENANT_ID: ${{parent.inputs.TENANT_ID}}
+      AZURE_CLIENT_SECRET: ${{parent.inputs.CLIENT_SECRET}}
+    outputs:
+      model_output:
+        type: custom_model
+    command: >-
+      python fetch_model.py
+      --model_output ${{outputs.model_output}}
+
+  data_retrieval_step:
+    component: azureml://registries/azureml/components/feature_retrieval/versions/1.1.1
+    inputs:
+      input_model:
+        path: ${{parent.jobs.model_retrieval_step.outputs.model_output}}
+      observation_data:
+        path: ${{parent.inputs.observation_data}}
+      timestamp_column: ${{parent.inputs.timestamp_column}}
+      observation_data_format: parquet
+    resources:
+      instance_type: standard_e4s_v3
+      runtime_version: "3.3"
+    outputs:
+      output_data:
+    conf:
+      spark.driver.cores: 4
+      spark.driver.memory: 28g
+      spark.executor.cores: 4
+      spark.executor.memory: 28g
+      spark.executor.instances: 2
+    type: spark
+  
+  inference_step:
+    type: command
+    compute: azureml:cpu-cluster-fs #ensure this matched the compute target in your workspace
+    code: ../batch_inference/src
+    environment: azureml:fs-env:1 #ensure this matched the environment in your workspace
+    inputs:
+      model_input:
+        path: ${{parent.jobs.model_retrieval_step.outputs.model_output}}
+      inference_data:
+        path: ${{parent.jobs.data_retrieval_step.outputs.output_data}}
+    outputs:
+      data_with_prediction:
+        type: uri_folder
+    command: >-
+      python batch_inference.py
+      --inference_data ${{inputs.inference_data}}
+      --model_input ${{inputs.model_input}}
+      --output_data ${{outputs.data_with_prediction}}
