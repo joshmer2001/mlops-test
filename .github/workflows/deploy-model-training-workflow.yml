@@ -3,7 +3,9 @@ name: deploy-model-training-pipeline
 on: 
   push:
     branches:
-      - josh-dev
+      - main
+    paths:
+      - 'featurestore_sample/**'
       
   workflow_dispatch:
     inputs:
