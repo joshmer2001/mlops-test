@@ -16,7 +16,7 @@ There are two primary workflows:
 ### 1. `deploy-model-training-workflow.yml`
  
 **Triggered by:**
-- Pushes to the `main` branch
+- Pushes to the `main` branch with commits/code changes within the 'featurestore_sample' directory
 - Manual trigger (`workflow_dispatch`)
  
 **Jobs:**
@@ -77,7 +77,11 @@ This repository assumes the required Azure infrastructure (AML workspace, comput
  
 - Go to **Settings > Environments**
 - Create or verify existence of two environments: `dev` and `test`
- 
+
+### Workload Identity Federation for Service Principal 
+
+To authenticate the GitHub workflow, this project uses Workload Identity Federation, which configures a user-assigned managed identity or app registration in Microsoft Entra ID to trust tokens from an external identity provider (IdP), in this case GitHub. To do this, navigate to Microsoft Entra ID on the Azure Portal > App registrations (for Service Principals) or Managed Identities (for UAMIs) > Select your App or User-Assigned Managed Identity > Federated credentials > Add credential > Choose your OIDC provider (in this case, GitHub Actions) and fill in required fields. Once this is created, move on to the next step to set up the Environment Secrets and Environment Variables on the GitHub Portal.
+
 ### GitHub Environment Secrets (Required for each environment)
  
 | Secret Name             | Description                                                                 |
