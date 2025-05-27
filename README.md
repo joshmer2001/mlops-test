@@ -89,7 +89,7 @@ To authenticate the GitHub workflow, this project uses Workload Identity Federat
 | `AZURE_CLIENT_ID`       | Client ID of the service principal used for authentication with Azure       |
 | `AZURE_SUBSCRIPTION_ID` | Azure Subscription ID where resources are deployed                          |
 | `AZURE_TENANT_ID`       | Azure Active Directory Tenant ID                                            |
-| `AZURE_CLIENT_SECRET`   | Client secret of the service principal                                      |
+| `AZURE_CLIENT_SECRET`   | Client secret of the service principal - you may have to create this manually by going into Entra > Service Principal > Certificates & Secrets |
 | `REGISTRY_NAME`         | Name of the Azure Container Registry used                                   |
  
 ### GitHub Environment Variables (Required for each environment)
@@ -110,19 +110,6 @@ To authenticate the GitHub workflow, this project uses Workload Identity Federat
  
 ---
  
-### Environment Deployment Protection 
- 
-To enforce manual approval for deployments to the `test` environment:
- 
-1. Navigate to **Settings > Environments > test**
-2. Under **Deployment protection rules**, enable **Required reviewers**
-3. Add up to 6 reviewers (your own GitHub handle can be added for now)
-4. Click **Save protection rules**
- 
-This ensures promotion workflows to `test` will only run after approval.
- 
----
- 
 ### AML Pipeline Configuration
  
 Ensure the AML pipelines reference the correct compute and environment values that match the resources created via IaC:
@@ -135,3 +122,18 @@ You may need to update these in the AML components found in the following files:
  
 - `featurestore_sample/project/fraud_model/pipelines/training_pipeline.yaml`
 - `featurestore_sample/project/fraud_model/pipelines/batch_inference_pipeline.yaml`
+  
+---
+
+### Environment Deployment Protection 
+ 
+To enforce manual approval for deployments to the `test` environment:
+ 
+1. Navigate to **Settings > Environments > test**
+2. Under **Deployment protection rules**, enable **Required reviewers**
+3. Add up to 6 reviewers (your own GitHub handle can be added for now)
+4. Click **Save protection rules**
+ 
+This ensures promotion workflows to `test` will only run after approval.
+ 
+---
