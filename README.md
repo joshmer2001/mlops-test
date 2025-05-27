@@ -69,7 +69,7 @@ featurestore_sample/project/fraud_model/pipelines/
  
 ---
  
-## Assumptions & Prerequisites
+## Set Up & Prerequisites
  
 This repository assumes the required Azure infrastructure (AML workspace, compute clusters, storage accounts, networking, and model registry) has been provisioned via Infrastructure-as-Code (IaC) from the `featurestore-iac` repository.
  
@@ -106,7 +106,7 @@ This repository assumes the required Azure infrastructure (AML workspace, comput
  
 ---
  
-## Environment Deployment Protection 
+### Environment Deployment Protection 
  
 To enforce manual approval for deployments to the `test` environment:
  
@@ -119,7 +119,7 @@ This ensures promotion workflows to `test` will only run after approval.
  
 ---
  
-## AML Pipeline Configuration
+### AML Pipeline Configuration
  
 Ensure the AML pipelines reference the correct compute and environment values that match the resources created via IaC:
  
