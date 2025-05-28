@@ -71,7 +71,7 @@ featurestore_sample/project/fraud_model/pipelines/
  
 ## Set Up & Prerequisites
  
-This repository assumes the required Azure infrastructure (AML workspace, compute clusters, storage accounts, networking, and model registry) has been provisioned via Infrastructure-as-Code (IaC) from the `featurestore-iac` repository. If not, follow the instructions [Base Infrastructure - Deploy Azure MLOps Terraform Infrastructure] (https://github.com/mlops-org-sains/featurestore-iac/blob/workshop-config-changes/README.md) to set up the infrastructure first
+This repository assumes the required Azure infrastructure (AML workspace, compute clusters, storage accounts, networking, and model registry) has been provisioned via Infrastructure-as-Code (IaC) from the `featurestore-iac` repository. If not, follow the instructions [Base Infrastructure - Deploy Azure MLOps Terraform Infrastructure](https://github.com/mlops-org-sains/featurestore-iac/blob/workshop-config-changes/README.md) to set up the infrastructure first
  
 ### GitHub Environments
  
