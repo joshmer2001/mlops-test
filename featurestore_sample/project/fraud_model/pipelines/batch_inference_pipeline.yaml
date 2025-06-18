@@ -31,7 +31,7 @@ jobs:
 
   model_retrieval_step:
     type: command
-    compute: azureml:cpu-cluster-fs #ensure this matched the compute target in your workspace
+    compute: azureml:ml-test-cpu #ensure this matched the compute target in your workspace
     code: ../batch_inference/src
     environment: azureml:fs-env:1 #ensure this matched the environment in your workspace
     environment_variables:
@@ -73,7 +73,7 @@ jobs:
   
   inference_step:
     type: command
-    compute: azureml:cpu-cluster-fs #ensure this matched the compute target in your workspace
+    compute: azureml:ml-test-cpu #ensure this matched the compute target in your workspace
     code: ../batch_inference/src
     environment: azureml:fs-env:1 #ensure this matched the environment in your workspace
     inputs:
