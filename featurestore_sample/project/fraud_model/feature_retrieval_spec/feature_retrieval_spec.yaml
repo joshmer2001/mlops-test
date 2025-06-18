@@ -10,7 +10,8 @@ feature_stores:
     feature_set: accounts:1
   - feature_name: transaction_amount_7d_avg
     feature_set: transactions:1
-  location: uksouth
-  uri: azureml://subscriptions/20239622-48cd-415e-a109-8519797770fa/resourcegroups/mlopsv3-feature-store/workspaces/mlopsv3-feature-store
-  workspace_id: f7fff03d-c138-4542-90a0-f14240a0587d
+  location: eastus
+  uri: azureml://subscriptions/76ab5a3e-070f-4430-9385-3bf28c2e213e/resourceGroups/ml-shared-rg/providers/Microsoft.MachineLearningServices/workspaces/ml-shared-fs
+  # storage uri: subscriptions/76ab5a3e-070f-4430-9385-3bf28c2e213e/resourcegroups/ml-shared-rg/workspaces/ml-shared-fs/datastores/workspaceblobstore/paths/LocalUpload/4e945932be81f40596920203f93330b6/spec
+  workspace_id: /subscriptions/76ab5a3e-070f-4430-9385-3bf28c2e213e/resourceGroups/ml-shared-rg/providers/Microsoft.MachineLearningServices/workspaces/ml-shared-fs
 serialization_version: 2
