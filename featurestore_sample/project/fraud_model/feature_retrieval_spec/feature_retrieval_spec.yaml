@@ -14,4 +14,4 @@ feature_stores:
   uri: azureml://subscriptions/76ab5a3e-070f-4430-9385-3bf28c2e213e/resourcegroups/ml-shared-rg/workspaces/ml-shared-fs
   # storage uri: subscriptions/76ab5a3e-070f-4430-9385-3bf28c2e213e/resourcegroups/ml-shared-rg/workspaces/ml-shared-fs/datastores/workspaceblobstore/paths/LocalUpload/4e945932be81f40596920203f93330b6/spec
   workspace_id: /subscriptions/76ab5a3e-070f-4430-9385-3bf28c2e213e/resourceGroups/ml-shared-rg/providers/Microsoft.MachineLearningServices/workspaces/ml-shared-fs
-serialization_version: 2
+serialization_version: 1
