@@ -1,14 +1,6 @@
 feature_stores:
 - features:
-  - feature_name: accountAge
-    feature_set: accounts:1
   - feature_name: transaction_amount_7d_sum
-    feature_set: transactions:1
-  - feature_name: transaction_amount_3d_sum
-    feature_set: transactions:1
-  - feature_name: numPaymentRejects1dPerUser
-    feature_set: accounts:1
-  - feature_name: transaction_amount_7d_avg
     feature_set: transactions:1
   location: eastus
   uri: azureml://subscriptions/76ab5a3e-070f-4430-9385-3bf28c2e213e/resourcegroups/ml-shared-rg/workspaces/ml-shared-fs
