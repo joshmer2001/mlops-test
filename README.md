@@ -1,69 +1,45 @@
-# GitHub Actions - Workflows Overview
- 
-This repository contains GitHub Actions workflows to support the training and promotion of machine learning models using Azure Machine Learning (AML).  
- 
-## Overview
- 
-There are two primary workflows:
- 
-1. **Model Training Workflow** – Trains a model in the `dev` environment and registers it to a shared registry.
-2. **Model Promotion Workflow** – Promotes a trained model from the shared registry to the `test` environment.
- 
----
- 
-## GitHub Actions Workflows
- 
-### 1. `deploy-model-training-workflow.yml`
- 
-**Triggered by:**
-- Pushes to the `main` branch with commits/code changes within the 'featurestore_sample' directory
-- Manual trigger (`workflow_dispatch`)
- 
-**Jobs:**
-- **Get Config Job**: Retrieves environment-specific variables from GitHub Environment secrets.
-- **Register Environment Job**: Calls the reusable workflow `reusable-register-environment.yml` to register the AML environment using:
-  - `conda.yml`
-  - `train-env.yml`
-- **Run ML Pipeline Job**: Calls the reusable workflow `reusable-run-pipeline.yml` to execute the AML training pipeline defined in:
-  - `training_pipeline.yaml`
- 
----
- 
-### 2. `deploy-model-promotion-workflow.yaml`
- 
-**Triggered by:**
-- Successful completion of `deploy-model-training-workflow.yml`
-- Manual trigger (`workflow_dispatch`)
- 
-**Jobs:**
-- **Get Config Job**: Retrieves environment-specific variables from GitHub Environment secrets.
-- **Register Environment Job**: Calls the reusable workflow `reusable-register-environment.yml` to register the AML environment using:
-  - `conda.yml`
-  - `train-env.yml`
-- **Run ML Pipeline Job**: Calls the reusable workflow `reusable-run-pipeline.yml` to execute the AML batch inference pipeline defined in:
-  - `batch_inference_pipeline.yaml`
- 
----
- 
-## Key Workflow and Pipeline Files
- 
+# Azure MLOpsv3 Accelerator
+
+This accelerator provides infrastructure as code, CI/CD pipelines, and templates for implementing MLOps best practices with Azure Machine Learning.
+
+## Architecture
+
+The accelerator uses a multi-environment approach with separate development, test, and production environments, each with their own resource group. A shared model registry enables model promotion across environments.
+
+![image](https://github.com/user-attachments/assets/d4b5f1f1-52ec-48b1-8fa5-c0bd4453a055)
+
+### Environment Separation
+
+- Each environment (dev, test, prod) has its own:
+  - Resource group with naming pattern: `mlops-{env}-rg`
+  - Environment-specific storage accounts and ML workspaces
+  - Connection to the shared model registry
+
+- Shared resources:
+  - Shared model registry in `mlops-shared-rg` resource group that enables:
+    - Central model storage and versioning
+    - Central feature store 
+    - Model promotion workflow across environments
+    - Consistent model management
+
+## ML Pipeline Components
+
 ```
-.github/workflows/
-├── deploy-model-training-workflow.yml        # Workflow for training ML models
-├── deploy-model-promotion-workflow.yaml      # Workflow for promoting ML models
-├── reusable-register-environment.yml         # Reusable workflow to register AML environments
-└── reusable-run-pipeline.yml                 # Reusable workflow to run AML pipelines
-
-featurestore_sample/project/env/
-├── conda.yml                                # Conda dependencies for AML environment registration
-├── train-env.yml                            # AML environment definition for training
-├── online.yml                               # AML environment definition for online inference
-
-featurestore_sample/project/fraud_model/pipelines/
-├── batch_inference_pipeline.yaml             # AML Pipeline for batch inference (called by promotion workflow)
-└── training_pipeline.yaml                    # AML pipeline for training model (called by training workflow)
+/featurestore_sample/
+├── automation-test/             # Automation testing
+├── featurestore/                # Feature engineering
+├── notebooks/                   # Jupyter notebook code
+├──project/
+   ├── env/                      # Python environment definition
+   ├── fraud_model/
+      ├── batch_inference        # Batch inference Python code
+      ├── evaluate               # Evaluate model Python code
+      ├── pipelines              # ML pipeline definitions
+      ├── register               # Regiter model Python code
+      ├── train                  # Train model Python code
 ```
 
+<<<<<<< HEAD
 - The `env` folder contains all environment and dependency files used for registering Azure ML environments.
 - In all folders under `featurestore_sample/project/fraud_model/` except for `pipelines`, you will find the relevant Python scripts that are executed as steps in the AML pipelines.
  
@@ -77,63 +53,34 @@ This repository assumes the required Azure infrastructure (AML workspace, comput
  
 - Go to **Settings > Environments**
 - Create or verify existence of two environments: `dev` and `test`
+=======
+## Getting Started
+ - Following approach / steps to be consisdered. Specific prerequisites are covered in each steps and details are given in below links
+     1. Phase 1: [Base Infrastructure - Deploy Azure MLOps Terraform Infrastructure](https://github.com/mlops-org-sains/featurestore-iac/blob/workshop-config-changes/README.md)
+     2. Phase 2: [Run Notebooks - manual implementation of the flow](./featurestore_sample/notebooks/sdk_only/)
+     3. Phase 3: [Run Github Action - CI/CD Implementation](https://github.com/mlops-org-sains/featurestore-mlops/blob/main/README.md)
+>>>>>>> 5f413c9b73c4b38c1569fae9e8040806891ae5e1
 
-### Workload Identity Federation for Service Principal 
+### Prerequisites
 
-To authenticate the GitHub workflow, this project uses Workload Identity Federation, which configures a user-assigned managed identity or app registration in Microsoft Entra ID to trust tokens from an external identity provider (IdP), in this case GitHub. To do this, navigate to Microsoft Entra ID on the Azure Portal > App registrations (for Service Principals) or Managed Identities (for UAMIs) > Select your App or User-Assigned Managed Identity > Federated credentials > Add credential > Choose your OIDC provider (in this case, GitHub Actions) and fill in required fields. Once this is created, move on to the next step to set up the Environment Secrets and Environment Variables on the GitHub Portal.
+This section outlines the general prerequisites for running the accelerator. For detailed **mandatory requirements and guidance**, please refer to the notes provided under each phase above.
 
-### GitHub Environment Secrets (Required for each environment)
- 
-| Secret Name             | Description                                                                 |
-|-------------------------|-----------------------------------------------------------------------------|
-| `AZURE_CLIENT_ID`       | Client ID of the service principal used for authentication with Azure       |
-| `AZURE_SUBSCRIPTION_ID` | Azure Subscription ID where resources are deployed                          |
-| `AZURE_TENANT_ID`       | Azure Active Directory Tenant ID                                            |
-| `AZURE_CLIENT_SECRET`   | Client secret of the service principal - you may have to create this manually by going into Entra > Service Principal > Certificates & Secrets |
-| `REGISTRY_NAME`         | Name of the Azure Container Registry used                                   |
- 
-### GitHub Environment Variables (Required for each environment)
- 
-| Variable Name             | Description                                                                 |
-|---------------------------|-----------------------------------------------------------------------------|
-| `AML_WORKSPACE`           | Name of the AML workspace used for experiments and pipelines                |
-| `APPLICATION_INSIGHTS`    | Name or ID of the Application Insights resource                             |
-| `AZURE_LOCATION`          | Azure region (e.g., `westus`)                                               |
-| `CONTAINER_REGISTRY`      | Name of the container registry used                                         |
-| `ENABLE_AML_COMPUTECLUSTER` | Flag to enable/provision AML compute cluster (`true` or `false`)          |
-| `ENABLE_MONITORING`       | Flag to enable monitoring features (`true` or `false`)                      |
-| `KEY_VAULT`               | Name of the Azure Key Vault storing secrets and credentials                 |
-| `RESOURCE_GROUP`          | Azure resource group name                                                   |
-| `STORAGE_ACCOUNT`         | Name of the Azure Storage Account                                           |
- 
-> Note:  Make sure values for `dev` and `test` environments align to their respective resource groups and services.
- 
----
- 
-### AML Pipeline Configuration
- 
-Ensure the AML pipelines reference the correct compute and environment values that match the resources created via IaC:
- 
-- **Default Values**:
-  - Compute: `azureml:cpu-cluster-fs`
-  - Environment: `azureml:fs-env`
- 
-You may need to update these in the AML components found in the following files:
- 
-- `featurestore_sample/project/fraud_model/pipelines/training_pipeline.yaml`
-- `featurestore_sample/project/fraud_model/pipelines/batch_inference_pipeline.yaml`
-  
----
+| Category | Requirement |
+|----------|-------------|
+| **Azure Resources** | Azure subscription, Azure Machine Learning workspace, Azure Key Vault, Azure Container Registry, Azure Storage Account |
+| **Infrastructure Setup** | Terraform (if infra-as-code is used) |
+| **Development Tools** | Python 3.8+, Azure CLI, Azure SDK, Azure ML CLI v2, Git |
+| **CI/CD Tools** | Azure DevOps or GitHub Actions configured with service connections to Azure |
+| **Permissions** | Contributor or Owner role on the Azure subscription/resource group, along with the necessary privileges to create Azure resources |
+| **Python Dependencies** | `azureml-sdk`, `mlflow`, `pandas`, `scikit-learn`, `joblib`, and other machine learning libraries specified in each phase above and listed in the conda.yml file |
+| **Compute Targets** | Azure ML compute clusters or attached compute instances for training and inference and serverless spark instance |
+| **Storage** | Datastores registered in Azure ML for datasets and model artifacts |
 
-### Environment Deployment Protection 
- 
-To enforce manual approval for deployments to the `test` environment:
- 
-1. Navigate to **Settings > Environments > test**
-2. Under **Deployment protection rules**, enable **Required reviewers**
-3. Add up to 6 reviewers (your own GitHub handle can be added for now)
-4. Click **Save protection rules**
- 
-This ensures promotion workflows to `test` will only run after approval.
- 
----
+
+
+### For detailed documentation:
+- [Phase1-Infrastructure.md](https://github.com/mlops-org-sains/featurestore-iac/blob/workshop-config-changes/docs/Infrastructure.md) - Infrastructure architecture overview
+- [Terraform-Setup.md](https://github.com/mlops-org-sains/featurestore-iac/blob/workshop-config-changes/docs/Terraform-Setup.md) - Detailed setup and deployment guide
+- [Model-Registry.md](https://github.com/mlops-org-sains/featurestore-iac/blob/workshop-config-changes/docs/Model-Registry.md) - Model registry configuration and usage
+- [Required Tags](https://github.com/mlops-org-sains/featurestore-iac/blob/workshop-config-changes/docs/Required-Tags.md) - Required Tags Implementation
+

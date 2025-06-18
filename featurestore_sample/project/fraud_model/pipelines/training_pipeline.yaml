@@ -14,20 +14,6 @@ inputs:
     path: wasbs://data@azuremlexampledata.blob.core.windows.net/feature-store-prp/observation_data/train/*.parquet
     type: uri_folder
   timestamp_column: timestamp # this will be used by the feature_retrieval_step
-  RESOURCE_GROUP:
-    type: string
-  WORKSPACE_NAME:
-    type: string
-  SUB_ID:
-    type: string
-  CLIENT_ID:
-    type: string
-  REGISTRY_NAME:
-    type: string
-  TENANT_ID:
-    type: string
-  CLIENT_SECRET:
-    type: string
 
 jobs:
   feature_retrieval_step:
@@ -55,9 +41,15 @@ jobs:
   
   training_step:
     type: command
+<<<<<<< HEAD
     compute: azureml:ml-dev-cpu #ensure this matched the compute target in your workspace
     code: ../train/src
     environment: azureml:fs-env:1 #ensure this matched the environment in your workspace
+=======
+    compute: azureml:cpu-cluster-fs
+    code: ../train/src
+    environment: azureml:fs-env:1
+>>>>>>> 5f413c9b73c4b38c1569fae9e8040806891ae5e1
     inputs:
       training_data: 
         path: ${{parent.jobs.feature_retrieval_step.outputs.output_data}}
@@ -75,9 +67,15 @@ jobs:
 
   evaluation_step: # this is a placeholder no-op step for illustration purpose only
     type: command
+<<<<<<< HEAD
     compute: azureml:ml-dev-cpu #ensure this matched the compute target in your workspace
     code: ../evaluate/src
     environment: azureml:fs-env:1 #ensure this matched the environment in your workspace
+=======
+    compute: azureml:cpu-cluster-fs
+    code: ../evaluate/src
+    environment: azureml:fs-env:1
+>>>>>>> 5f413c9b73c4b38c1569fae9e8040806891ae5e1
     inputs:
       model_input: ${{parent.jobs.training_step.outputs.model_output}}
     outputs:
@@ -90,6 +88,7 @@ jobs:
 
   register_model_step:
     type: command
+<<<<<<< HEAD
     compute: azureml:ml-dev-cpu #ensure this matched the compute target in your workspace
     code: ../register_model/src
     environment: azureml:fs-env:1 #ensure this matched the environment in your workspace
@@ -101,6 +100,11 @@ jobs:
       REGISTRY_NAME: ${{parent.inputs.REGISTRY_NAME}}
       AZURE_TENANT_ID: ${{parent.inputs.TENANT_ID}}
       AZURE_CLIENT_SECRET: ${{parent.inputs.CLIENT_SECRET}}
+=======
+    compute: azureml:cpu-cluster-fs
+    code: ../register_model/src
+    environment: azureml:fs-env:1
+>>>>>>> 5f413c9b73c4b38c1569fae9e8040806891ae5e1
     inputs:
       model_input: ${{parent.jobs.training_step.outputs.model_output}}
       evaluation_input: ${{parent.jobs.evaluation_step.outputs.evaluation_output}}

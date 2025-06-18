@@ -12,36 +12,18 @@ inputs:
     path: wasbs://data@azuremlexampledata.blob.core.windows.net/feature-store-prp/observation_data/batch_inference/
     type: uri_folder
   timestamp_column: timestamp
-  RESOURCE_GROUP:
-    type: string
-  WORKSPACE_NAME:
-    type: string
-  SUB_ID:
-    type: string
-  CLIENT_ID:
-    type: string
-  REGISTRY_NAME:
-    type: string
-  TENANT_ID:
-    type: string
-  CLIENT_SECRET:
-    type: string
 
 jobs:
 
   model_retrieval_step:
     type: command
+<<<<<<< HEAD
     compute: azureml:ml-test-cpu #ensure this matched the compute target in your workspace
+=======
+    compute: azureml:cpu-cluster-fs
+>>>>>>> 5f413c9b73c4b38c1569fae9e8040806891ae5e1
     code: ../batch_inference/src
-    environment: azureml:fs-env:1 #ensure this matched the environment in your workspace
-    environment_variables:
-      RESOURCE_GROUP: ${{parent.inputs.RESOURCE_GROUP}}
-      WORKSPACE_NAME: ${{parent.inputs.WORKSPACE_NAME}}
-      AZURE_SUBSCRIPTION_ID: ${{parent.inputs.SUB_ID}}
-      AZURE_CLIENT_ID: ${{parent.inputs.CLIENT_ID}}
-      REGISTRY_NAME: ${{parent.inputs.REGISTRY_NAME}}
-      AZURE_TENANT_ID: ${{parent.inputs.TENANT_ID}}
-      AZURE_CLIENT_SECRET: ${{parent.inputs.CLIENT_SECRET}}
+    environment: azureml:fs-env:1
     outputs:
       model_output:
         type: custom_model
@@ -73,9 +55,13 @@ jobs:
   
   inference_step:
     type: command
+<<<<<<< HEAD
     compute: azureml:ml-test-cpu #ensure this matched the compute target in your workspace
+=======
+    compute: azureml:cpu-cluster-fs
+>>>>>>> 5f413c9b73c4b38c1569fae9e8040806891ae5e1
     code: ../batch_inference/src
-    environment: azureml:fs-env:1 #ensure this matched the environment in your workspace
+    environment: azureml:fs-env:1
     inputs:
       model_input:
         path: ${{parent.jobs.model_retrieval_step.outputs.model_output}}

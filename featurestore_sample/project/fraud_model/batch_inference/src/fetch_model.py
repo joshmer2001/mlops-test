@@ -1,5 +1,6 @@
 from azure.ai.ml.entities import Model
 from azure.ai.ml.constants import AssetTypes
+#from azure.identity import ManagedIdentityCredential
 from azure.identity import DefaultAzureCredential
 from azure.ai.ml import MLClient
 
@@ -13,19 +14,18 @@ parser = argparse.ArgumentParser("fetch")
 parser.add_argument("--model_output", type=str, help="Path of output model")
 args = parser.parse_args()
 
-# credential = ManagedIdentityCredential(client_id=os.environ.get("AZURE_CLIENT_ID")) #Needs to change to DefaultAzureCredential if not using UAMI
-
+#credential = ManagedIdentityCredential(client_id="...") #Needs to change to DefaultAzureCredential if not using UAMI
 credential = DefaultAzureCredential()
 
 ml_client = MLClient(credential=credential,
-                     subscription_id=os.environ.get("AZURE_SUBSCRIPTION_ID"),
-                     resource_group_name=os.environ.get("RESOURCE_GROUP"),
-                     workspace_name=os.environ.get("WORKSPACE_NAME")
+                     subscription_id="...",
+                     resource_group_name="...",
+                     workspace_name="...",
                      )
 
 ml_client_registry = MLClient(credential=credential,
-                        registry_name=os.environ.get("REGISTRY_NAME"),
-                        registry_location="uksouth")
+                        registry_name="...",
+                        registry_location="...")
 
 ml_client_registry.models.download(name="fraud_model", version="1")
 
