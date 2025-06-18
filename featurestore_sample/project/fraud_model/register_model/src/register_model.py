@@ -40,6 +40,6 @@ ml_client = MLClient(credential, subscription_id, resource_group, workspace)
 
 ml_client.models.share(name="fraud_model",
                        version="1",
-                       registry_name=os.environ.get("REGISTRY_NAME"),
+                       registry_name="ml-registry",
                        share_with_name="fraud_model",
                        share_with_version="2.2.0")
